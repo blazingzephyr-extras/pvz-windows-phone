@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
+using static Sexy.GlobalStaticVars;
 
 namespace Sexy
 {
@@ -82,6 +83,9 @@ namespace Sexy
 			// blazingzephyr: This one is pretty important because it is going to
 			// cause crashes unless we disable it.
 			// graphics.IsFullScreen = true;
+
+			// blazingzephyr: We have to do this in order to see the cursor.
+			IsMouseVisible = true;
 
 			Guide.SimulateTrialMode = false;
 			graphics.PreferredBackBufferWidth = 800;
@@ -286,54 +290,129 @@ namespace Sexy
 			}
 		}
 
-		public void HandleInput(GameTime gameTime)
+        private KeyboardState previousKeyboardState = default(KeyboardState);
+        private ButtonState previousLeftButtonState = default(ButtonState);
+        private float previousMouseX = 0;
+        private float previousMouseY = 0;
+
+        // blazingzephyr: Okay, let's break it down from the beginning.
+        // There are four touchscreen actions on the Windows Phone version:
+        // * TouchBegan,
+        // * TouchMoved,
+        // * TouchEnded,
+        // * TouchCancelled (which is ignored anyway)
+        public void HandleInput(GameTime gameTime)
 		{
 			if (LoadingScreen.IsLoading)
 			{
 				return;
 			}
+
+			// blazingzephyr: I added support for the keyboard, but I suppose it only reads Backspace,
+			// so it shouldn't matter.
 			GamePadState state = GamePad.GetState(PlayerIndex.One);
-			if (state.Buttons.Back == ButtonState.Pressed && previousGamepadState.Buttons.Back == ButtonState.Released)
+			KeyboardState keyboardState = Keyboard.GetState(PlayerIndex.One);
+
+			bool backButtonPress = state.Buttons.Back == ButtonState.Pressed && previousGamepadState.Buttons.Back == ButtonState.Released;
+			backButtonPress |= keyboardState.IsKeyDown(Keys.Back) && previousKeyboardState.IsKeyUp(Keys.Back);
+
+            if (backButtonPress)
+            {
+                GlobalStaticVars.gSexyAppBase.BackButtonPress();
+            }
+
+            previousGamepadState = state;
+            previousKeyboardState = keyboardState;
+
+            // blazingzephyr: Touches have been replaced by mouse clicks,
+			// but we preserve the object to keep the system running.
+            MouseState state2 = Mouse.GetState();
+
+            // blazingzephyr: Immediately leave if the click was not within bounds.
+            if (state2.X >= Window.ClientBounds.Width || state2.Y >= Window.ClientBounds.Height)
 			{
-				GlobalStaticVars.gSexyAppBase.BackButtonPress();
+				return;
 			}
-			TouchCollection state2 = TouchPanel.GetState();
-			bool flag = false;
-			foreach (TouchLocation item in state2)
+
+			_Touch touch = default(_Touch);
+            touch.location.mX = state2.X;
+            touch.location.mY = state2.Y;
+			touch.previousLocation.X = previousMouseX;
+			touch.previousLocation.Y = previousMouseY;
+
+			if (previousLeftButtonState == ButtonState.Released && state2.LeftButton == ButtonState.Pressed)
+            {
+                GlobalStaticVars.gSexyAppBase.TouchBegan(touch);
+            }
+			else if (previousLeftButtonState == ButtonState.Pressed && state2.LeftButton == ButtonState.Pressed &&
+				(previousMouseX != state2.X || previousMouseY != state2.Y))
+            {
+                GlobalStaticVars.gSexyAppBase.TouchMoved(touch);
+            }
+			else if (previousLeftButtonState == ButtonState.Pressed && state2.LeftButton == ButtonState.Released)
+            {
+                GlobalStaticVars.gSexyAppBase.TouchEnded(touch);
+            }
+			else
 			{
-				_Touch touch = default(_Touch);
-				touch.location.mX = item.Position.X;
-				touch.location.mY = item.Position.Y;
-				TouchLocation previousLocation;
-				if (item.TryGetPreviousLocation(out previousLocation))
-				{
-					touch.previousLocation = new CGPoint(previousLocation.Position.X, previousLocation.Position.Y);
-				}
-				else
-				{
-					touch.previousLocation = touch.location;
-				}
-				touch.timestamp = gameTime.TotalGameTime.TotalSeconds;
-				if (item.State == TouchLocationState.Pressed && !flag)
-				{
-					GlobalStaticVars.gSexyAppBase.TouchBegan(touch);
-					flag = true;
-				}
-				else if (item.State == TouchLocationState.Moved)
-				{
-					GlobalStaticVars.gSexyAppBase.TouchMoved(touch);
-				}
-				else if (item.State == TouchLocationState.Released)
-				{
-					GlobalStaticVars.gSexyAppBase.TouchEnded(touch);
-				}
-				else if (item.State == TouchLocationState.Invalid)
-				{
-					GlobalStaticVars.gSexyAppBase.TouchesCanceled();
-				}
+				return;
 			}
-			previousGamepadState = state;
-		}
+
+            previousLeftButtonState = state2.LeftButton;
+            previousMouseX = state2.X;
+            previousMouseY = state2.Y;
+        }
+
+		// blazingzephyr: Original source code for reference purposes.
+		//
+		// public void HandleInput(GameTime gameTime)
+		// {
+		// 	if (LoadingScreen.IsLoading)
+		// 	{
+		// 		return;
+		// 	}
+		// 	GamePadState state = GamePad.GetState(PlayerIndex.One);
+		// 	if (state.Buttons.Back == ButtonState.Pressed && previousGamepadState.Buttons.Back == ButtonState.Released)
+		// 	{
+		// 		GlobalStaticVars.gSexyAppBase.BackButtonPress();
+		// 	}
+		// 	TouchCollection state2 = TouchPanel.GetState();
+		// 	bool flag = false;
+		// 	foreach (TouchLocation item in state2)
+		// 	{
+		// 		_Touch touch = default(_Touch);
+		// 		touch.location.mX = item.Position.X;
+		// 		touch.location.mY = item.Position.Y;
+		// 		TouchLocation previousLocation;
+		// 		if (item.TryGetPreviousLocation(out previousLocation))
+		// 		{
+		// 			touch.previousLocation = new CGPoint(previousLocation.Position.X, previousLocation.Position.Y);
+		// 		}
+		// 		else
+		// 		{
+		// 			touch.previousLocation = touch.location;
+		// 		}
+		// 		touch.timestamp = gameTime.TotalGameTime.TotalSeconds;
+		// 		if (item.State == TouchLocationState.Pressed && !flag)
+		// 		{
+		// 			GlobalStaticVars.gSexyAppBase.TouchBegan(touch);
+		// 			flag = true;
+		// 		}
+		// 		else if (item.State == TouchLocationState.Moved)
+		// 		{
+		// 			GlobalStaticVars.gSexyAppBase.TouchMoved(touch);
+		// 		}
+		// 		else if (item.State == TouchLocationState.Released)
+		// 		{
+		// 			GlobalStaticVars.gSexyAppBase.TouchEnded(touch);
+		// 		}
+		// 		else if (item.State == TouchLocationState.Invalid)
+		// 		{
+		// 			GlobalStaticVars.gSexyAppBase.TouchesCanceled();
+		// 		}
+		// 	}
+		// 	previousGamepadState = state;
+		// }
 
 		protected override void OnActivated(object sender, EventArgs args)
 		{
