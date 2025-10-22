@@ -32,7 +32,7 @@ namespace Lawn
 
 		public float mCreditsY;
 
-		private bool videoDone;
+		// private bool videoDone;
 
 		private static Dictionary<string, string> sectionSubstrings = new Dictionary<string, string>(100);
 
@@ -47,6 +47,7 @@ namespace Lawn
 		// blazingzephyr: XNA's video playback API.
 		private VideoPlayer VideoPlayer;
 		private Video video;
+		private bool videoLoaded;
 
         internal static int DrawLeftText(Graphics g, string theText, int theY)
 		{
@@ -152,12 +153,11 @@ namespace Lawn
 			}
 			else
 			{
-				mVideoLoading = false;
-				mVideoFinished = true;
 				mDidInitialDraw = false;
 				mNeedToStartPlaying = false;
 				mMainMenuButton.SetVisible(true);
 				mMainMenuButton.Move(mApp.mWidth / 2 - mMainMenuButton.mWidth / 2, mMainMenuButton.mY);
+				VideoFinished();
 			}
 
 			VideoPlayer = new VideoPlayer();
@@ -238,7 +238,7 @@ namespace Lawn
 			g.SetColor(SexyColor.Black);
 			if (!mVideoLoading)
 			{
-				if (videoDone)
+				if (mVideoFinished)
                 {
                     DrawCredits(g);
                 }
@@ -315,11 +315,13 @@ namespace Lawn
 			touching = false;
 			if (theId == 1)
 			{
+				VideoPlayer.Stop();
 				mApp.KillCreditScreen();
 				mApp.DoBackToMain();
 			}
 			if (theId == 0)
 			{
+				VideoPlayer.Stop();
 				mApp.KillCreditScreen();
 				mApp.ShowCreditScreen();
 			}
@@ -327,6 +329,7 @@ namespace Lawn
 
 		public override bool BackButtonPress()
 		{
+			VideoPlayer.Stop();
 			mApp.KillCreditScreen();
 			mApp.ShowGameSelectorWithOptions();
 			return true;
@@ -341,7 +344,6 @@ namespace Lawn
             }
 
 			// Initial: start the playback of music video.
-			bool videoFinished = !videoDone && video.Duration == VideoPlayer.PlayPosition;
             if (mNeedToStartPlaying)
 			{
 				try
@@ -350,15 +352,15 @@ namespace Lawn
                 }
 				catch
 				{
-                    videoFinished = true;
+					videoLoaded = false;
 				}
 
 				mNeedToStartPlaying = false;
             }
             // When video is done: roll the credits instead.
-            else if (videoDone)
+            else if (mVideoFinished)
 			{
-                mCreditsY -= 3f * Constants.InvertAndScale(0.25f);
+				mCreditsY -= 3f * Constants.InvertAndScale(0.25f);
                 if (mCreditsY < (float)(-(mCreditsHeight + Constants.CreditScreen_TextStart)))
                 {
                     RestartScroll();
@@ -370,9 +372,8 @@ namespace Lawn
             }
 
 			// If the video is finished, consider it done.
-			if (videoFinished)
+			if (videoLoaded && !mVideoFinished && video.Duration == VideoPlayer.PlayPosition)
             {
-                videoDone = true;
                 VideoFinished();
             }
         }
@@ -419,6 +420,7 @@ namespace Lawn
 		public void VideoLoaded(bool succeeded)
 		{
 			mVideoLoading = false;
+			videoLoaded = succeeded;
 			if (!succeeded)
 			{
 				VideoFinished();
