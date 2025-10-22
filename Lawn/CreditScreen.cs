@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Media;
 using Sexy;
@@ -44,7 +44,11 @@ namespace Lawn
 
 		private CGPoint touchStartPosition;
 
-		internal static int DrawLeftText(Graphics g, string theText, int theY)
+		// blazingzephyr: XNA's video playback API.
+		private VideoPlayer VideoPlayer;
+		private Video video;
+
+        internal static int DrawLeftText(Graphics g, string theText, int theY)
 		{
 			TRect theRect = new TRect(Constants.CreditScreen_LeftText_X, theY, Constants.CreditScreen_LeftRight_Text_Width, Constants.BOARD_HEIGHT);
 			return TodStringFile.TodDrawStringWrapped(g, theText, theRect, Resources.FONT_HOUSEOFTERROR16, SexyColor.White, DrawStringJustification.DS_ALIGN_RIGHT);
@@ -155,7 +159,18 @@ namespace Lawn
 				mMainMenuButton.SetVisible(true);
 				mMainMenuButton.Move(mApp.mWidth / 2 - mMainMenuButton.mWidth / 2, mMainMenuButton.mY);
 			}
-		}
+
+			VideoPlayer = new VideoPlayer();
+			try
+            {
+                video = mApp.mContentManager.Load<Video>("video/credits");
+                VideoLoaded(true);
+            }
+			catch
+            {
+                VideoLoaded(false);
+            }
+        }
 
 		public override void Dispose()
 		{
@@ -166,11 +181,14 @@ namespace Lawn
 
 		public void AppGotFocus()
 		{
-			if (!mNeedToStartPlaying && !videoDone)
-			{
-				mApp.MoviePlayerPlaybackDidFinish();
-				videoDone = true;
-			}
+			// blazingzephyr: This was mostly required due to the way the credits were played.
+			// Since it has been completely changed since then, this is no longer needed.
+			//
+			// if (!mNeedToStartPlaying && video.Duration == VideoPlayer.PlayPosition && !videoDone)
+			// {
+			// 	mApp.MoviePlayerPlaybackDidFinish();
+			// 	videoDone = true;
+			// }
 		}
 
 		public void DrawCredits(Graphics g)
@@ -220,7 +238,20 @@ namespace Lawn
 			g.SetColor(SexyColor.Black);
 			if (!mVideoLoading)
 			{
-				DrawCredits(g);
+				if (videoDone)
+                {
+                    DrawCredits(g);
+                }
+				else if (VideoPlayer.PlayPosition != TimeSpan.Zero)
+				{
+					var videoTexture = VideoPlayer.GetTexture();
+					var b = videoTexture.Bounds;
+					float x = (mApp.mWidth - b.Width) / 2.0f;
+                    float y = (mApp.mHeight - b.Height) / 2.0f;
+
+                    Image videoImage = new Image(videoTexture);
+					g.DrawImage(videoImage, x, y);
+                }
 			}
 			mDidInitialDraw = true;
 		}
@@ -301,36 +332,84 @@ namespace Lawn
 			return true;
 		}
 
+		// blazingzephyr: As credits had to be remade, this was completely rewritten.
 		public override void Update()
-		{
-			if (touching)
+        {
+            if (touching || !mDidInitialDraw)
+            {
+                return;
+            }
+
+			// Initial: start the playback of music video.
+			bool videoFinished = !videoDone && video.Duration == VideoPlayer.PlayPosition;
+            if (mNeedToStartPlaying)
 			{
-				return;
-			}
-			mCreditsY -= 3f * Constants.InvertAndScale(0.25f);
-			if (mCreditsY < (float)(-(mCreditsHeight + Constants.CreditScreen_TextStart)))
-			{
-				RestartScroll();
-			}
-			if (mCreditsY > (float)Constants.CreditScreen_TextEnd)
-			{
-				RestartScroll();
-			}
-			if (mDidInitialDraw && mNeedToStartPlaying)
-			{
-				mApp.LostFocus();
-				if (mApp.PlayMovie(VideoType.Credits, MOVIESCALINGMODE.MOVIESCALINGMODE_NONE, MOVIECONTROLMODE.MOVIECONTROLMODE_DEFAULT, SexyColor.Black))
+				try
+                {
+                    VideoPlayer.Play(video);
+                }
+				catch
 				{
-					videoDone = false;
+                    videoFinished = true;
 				}
-				else
-				{
-					videoDone = true;
-					VideoFinished();
-				}
+
 				mNeedToStartPlaying = false;
-			}
-		}
+            }
+            // When video is done: roll the credits instead.
+            else if (videoDone)
+			{
+                mCreditsY -= 3f * Constants.InvertAndScale(0.25f);
+                if (mCreditsY < (float)(-(mCreditsHeight + Constants.CreditScreen_TextStart)))
+                {
+                    RestartScroll();
+                }
+                if (mCreditsY > (float)Constants.CreditScreen_TextEnd)
+                {
+                    RestartScroll();
+                }
+            }
+
+			// If the video is finished, consider it done.
+			if (videoFinished)
+            {
+                videoDone = true;
+                VideoFinished();
+            }
+        }
+
+		// blazingzephyr: Original Update code, for reference purposes.
+		// 
+        // public override void Update()
+        // {
+        //     if (touching)
+        //     {
+        //         return;
+        //     }
+        //     mCreditsY -= 3f * Constants.InvertAndScale(0.25f);
+        //     if (mCreditsY < (float)(-(mCreditsHeight + Constants.CreditScreen_TextStart)))
+        //     {
+        //         RestartScroll();
+        //     }
+        //     if (mCreditsY > (float)Constants.CreditScreen_TextEnd)
+        //     {
+        //         RestartScroll();
+        //     }
+        //     if (mDidInitialDraw && mNeedToStartPlaying)
+        //     {
+        //         mApp.LostFocus();
+        //         if (mApp.PlayMovie(VideoType.Credits, MOVIESCALINGMODE.MOVIESCALINGMODE_NONE, MOVIECONTROLMODE.MOVIECONTROLMODE_DEFAULT, SexyColor.Black))
+        //         {
+        //             videoDone = false;
+        //         }
+        //         else
+        //         {
+        //             videoDone = true;
+        //             VideoFinished();
+        //         }
+		// 
+        //         mNeedToStartPlaying = false;
+        //     }
+        // }
 
 		public void RestartScroll()
 		{

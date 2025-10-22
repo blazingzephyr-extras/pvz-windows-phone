@@ -1,15 +1,23 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Threading;
-using Microsoft.Devices;
-using Microsoft.Phone.Tasks;
+// blazingzephyr: We are not using Windows.Phone in this decompilation.
+// using Microsoft.Devices;
+//
+// This API is used to playback credits, but it is unavailable on Windows.
+// using Microsoft.Phone.Tasks;
+//
+// This legacy API might help instead.
+using Microsoft.Xna.Framework.Media;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.GamerServices;
 using Sexy.TodLib;
+using Lawn;
 
 namespace Sexy
 {
@@ -103,7 +111,11 @@ namespace Sexy
 
 		private static Random rand = new Random(DateTime.UtcNow.Millisecond);
 
-		public static MediaPlayerLauncher VideoPlayer = new MediaPlayerLauncher();
+		// blazingzephyr: Video player used for the credits.
+		// Since Windows.Phone APIs are unavailable, I had to go with the archaic video player.
+		// Credits changed the way they work.
+		//
+		// public static MediaPlayerLauncher VideoPlayer = new MediaPlayerLauncher();
 
 		protected bool wantToShowUpdateMessage;
 
@@ -150,7 +162,7 @@ namespace Sexy
 		public virtual void PlaySample(int theSoundNum)
 		{
 			PlaySample(theSoundNum, 0);
-		}
+        }
 
 		public virtual void PlaySample(int theSoundNum, int thePan)
 		{
@@ -319,7 +331,7 @@ namespace Sexy
 		{
 			mWidgetManager.Resize(mWidth, mHeight);
 			InitHook();
-		}
+        }
 
 		public virtual void InitHook()
 		{
@@ -845,8 +857,10 @@ namespace Sexy
 
 		public void DoVibration()
 		{
-			VibrateController @default = VibrateController.Default;
-			@default.Start(TimeSpan.FromMilliseconds(500.0));
+			// blazingzephyr: Skip the vibration for now.
+			// 
+			// VibrateController @default = VibrateController.Default;
+			// @default.Start(TimeSpan.FromMilliseconds(500.0));
 		}
 
 		public virtual void Shutdown()
@@ -889,30 +903,33 @@ namespace Sexy
 		{
 		}
 
-		public bool PlayMovie(VideoType video, MOVIESCALINGMODE mOVIESCALINGMODE, MOVIECONTROLMODE mOVIECONTROLMODE, SexyColor sexyColor)
-		{
-			bool flag = true;
-			try
-			{
-				if (video == VideoType.Credits)
-				{
-					VideoPlayer.Media = new Uri("Content/video/credits.wmv", UriKind.Relative);
-					VideoPlayer.Location = (MediaLocationType)1;
-					VideoPlayer.Controls = (MediaPlaybackControls)31;
-					VideoPlayer.Show();
-				}
-			}
-			catch (Exception ex)
-			{
-				string message = ex.Message;
-				flag = false;
-				GotFocus();
-			}
-			MoviePlayerContentPreloadDidFinish(flag);
-			return flag;
-		}
+        // blazingzephyr: Windows Phone component for video playback is replaced
+        // with the XNA component, luckily for us, the video was already in wmv.
+        // I just had to create an xnb for the file.
+        // public bool PlayMovie(VideoType video, MOVIESCALINGMODE mOVIESCALINGMODE, MOVIECONTROLMODE mOVIECONTROLMODE, SexyColor sexyColor)
+        // {
+        // 	bool flag = true;
+        // 	try
+        // 	{
+        // 		if (video == VideoType.Credits)
+        // 		{
+        // 			VideoPlayer.Media = new Uri("Content/video/credits.wmv", UriKind.Relative);
+        // 			VideoPlayer.Location = (MediaLocationType)1;
+        // 			VideoPlayer.Controls = (MediaPlaybackControls)31;
+        // 			VideoPlayer.Show();
+        // 		}
+        // 	}
+        // 	catch (Exception ex)
+        // 	{
+        // 		string message = ex.Message;
+        // 		flag = false;
+        // 		GotFocus();
+        // 	}
+        // 	MoviePlayerContentPreloadDidFinish(flag);
+        // 	return flag;
+        // }
 
-		public bool IsLandscape()
+        public bool IsLandscape()
 		{
 			if (mInterfaceOrientation != UI_ORIENTATION.UI_ORIENTATION_LANDSCAPE_LEFT)
 			{

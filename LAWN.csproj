@@ -1,15 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <AssemblyName>LAWN</AssemblyName>
     <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-    <TargetFramework>net20</TargetFramework>
+    <TargetFramework>net40</TargetFramework>
+    <Platforms>x86</Platforms>
   </PropertyGroup>
   <PropertyGroup>
-    <LangVersion>4</LangVersion>
+    <LangVersion>7.0</LangVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <RootNamespace />
+    <OutputType>WinExe</OutputType>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Microsoft.Xna.Framework.RuntimeProfile" />
@@ -18,17 +20,26 @@
     <EmbeddedResource Include="Microsoft.Xna.Framework.XlastConfiguration" LogicalName="Microsoft.Xna.Framework.XlastConfiguration" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Xna.Framework" />
-    <Reference Include="Microsoft.Xna.Framework.Game" />
-    <Reference Include="Microsoft.Xna.Framework.GamerServices" />
-    <Reference Include="Microsoft.Xna.Framework.Graphics" />
-    <Reference Include="Microsoft.Phone" />
-    <Reference Include="System.Core">
-      <HintPath>C:\WINDOWS\Microsoft.NET\Framework64\v4.0.30319\System.Core.dll</HintPath>
+    <Reference Include="Microsoft.Xna.Framework">
+      <HintPath>Libs\Microsoft.Xna.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="System.Xml">
-      <HintPath>C:\WINDOWS\Microsoft.NET\Framework64\v4.0.30319\System.Xml.dll</HintPath>
+    <Reference Include="Microsoft.Xna.Framework.Game">
+      <HintPath>Libs\Microsoft.Xna.Framework.Game.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Xna.Framework.Input.Touch" />
+    <Reference Include="Microsoft.Xna.Framework.GamerServices">
+      <HintPath>Libs\Microsoft.Xna.Framework.GamerServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Graphics">
+      <HintPath>Libs\Microsoft.Xna.Framework.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Input.Touch">
+      <HintPath>Libs\Microsoft.Xna.Framework.Input.Touch.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Video">
+      <HintPath>Libs\Microsoft.Xna.Framework.Video.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Xna.Framework.Video">
+      <HintPath>Libs\Microsoft.Xna.Framework.Video.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

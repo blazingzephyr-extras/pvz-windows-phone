@@ -1,9 +1,12 @@
-using System;
+﻿using System;
 using System.Globalization;
 using Lawn;
-using Microsoft.Phone.Info;
-using Microsoft.Phone.Shell;
+// blazingzephyr: We are not using Windows.Phone in this decompilation.
+//
+// using Microsoft.Phone.Info;
+// using Microsoft.Phone.Shell;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -35,25 +38,28 @@ namespace Sexy
 
 		private GamePadState previousGamepadState = default(GamePadState);
 
-		public static bool RunWhenLocked
-		{
-			get
-			{
-				//IL_0005: Unknown result type (might be due to invalid IL or missing references)
-				//IL_000b: Invalid comparison between Unknown and I4
-				return (int)PhoneApplicationService.Current.ApplicationIdleDetectionMode == 1;
-			}
-			set
-			{
-				try
-				{
-					PhoneApplicationService.Current.ApplicationIdleDetectionMode = (IdleDetectionMode)(value ? 1 : 0);
-				}
-				catch
-				{
-				}
-			}
-		}
+		// blazingzephyr: I presume this means the game should run in background?
+		//
+		// public static bool RunWhenLocked
+		// {
+		// 	get
+		// 	{
+		// 		//IL_0005: Unknown result type (might be due to invalid IL or missing references)
+		// 		//IL_000b: Invalid comparison between Unknown and I4
+		// 		return (int)PhoneApplicationService.Current.ApplicationIdleDetectionMode == 1;
+		// 	}
+		// 	set
+		// 	{
+		// 		try
+		// 		{
+		// 			PhoneApplicationService.Current.ApplicationIdleDetectionMode = (IdleDetectionMode)(value ? 1 : 0);
+		// 		}
+		// 		catch
+		// 		{
+		// 		}
+		// 	}
+		// }
+		public static bool RunWhenLocked { get { return true; } set { } }
 
 		public static bool LOW_MEMORY_DEVICE { get; private set; }
 
@@ -72,7 +78,11 @@ namespace Sexy
 			SetupTileSchedule();
 			graphics = Graphics.GetNew(this);
 			SetLowMem();
-			graphics.IsFullScreen = true;
+
+			// blazingzephyr: This one is pretty important because it is going to
+			// cause crashes unless we disable it.
+			// graphics.IsFullScreen = true;
+
 			Guide.SimulateTrialMode = false;
 			graphics.PreferredBackBufferWidth = 800;
 			graphics.PreferredBackBufferHeight = 480;
@@ -82,31 +92,34 @@ namespace Sexy
 			GraphicsState.mGraphicsDeviceManager.PreparingDeviceSettings += mGraphicsDeviceManager_PreparingDeviceSettings;
 			base.TargetElapsedTime = TimeSpan.FromSeconds(1.0 / 30.0);
 			base.Exiting += Main_Exiting;
-			PhoneApplicationService.Current.UserIdleDetectionMode = (IdleDetectionMode)0;
-			PhoneApplicationService.Current.Launching += Game_Launching;
-			PhoneApplicationService.Current.Activated += Game_Activated;
-			PhoneApplicationService.Current.Closing += Current_Closing;
-			PhoneApplicationService.Current.Deactivated += Current_Deactivated;
+
+			// blazingzephyr: This seems to be purely for utility, so let's skip it.
+			// 
+			// PhoneApplicationService.Current.UserIdleDetectionMode = (IdleDetectionMode)0;
+			// PhoneApplicationService.Current.Launching += Game_Launching;
+			// PhoneApplicationService.Current.Activated += Game_Activated;
+			// PhoneApplicationService.Current.Closing += Current_Closing;
+			// PhoneApplicationService.Current.Deactivated += Current_Deactivated;
 		}
 
-		private void Current_Deactivated(object sender, DeactivatedEventArgs e)
-		{
-			GlobalStaticVars.gSexyAppBase.Tombstoned();
-		}
+		//private void Current_Deactivated(object sender, DeactivatedEventArgs e)
+		//{
+		//	GlobalStaticVars.gSexyAppBase.Tombstoned();
+		//}
 
-		private void Current_Closing(object sender, ClosingEventArgs e)
-		{
-			PhoneApplicationService.Current.State.Clear();
-		}
+		//private void Current_Closing(object sender, ClosingEventArgs e)
+		//{
+		//	PhoneApplicationService.Current.State.Clear();
+		//}
 
-		private void Game_Activated(object sender, ActivatedEventArgs e)
-		{
-		}
+		//private void Game_Activated(object sender, ActivatedEventArgs e)
+		//{
+		//}
 
-		private void Game_Launching(object sender, LaunchingEventArgs e)
-		{
-			PhoneApplicationService.Current.State.Clear();
-		}
+		//private void Game_Launching(object sender, LaunchingEventArgs e)
+		//{
+		//	PhoneApplicationService.Current.State.Clear();
+		//}
 
 		private static void SetupTileSchedule()
 		{
@@ -197,9 +210,11 @@ namespace Sexy
 
 		private static void SetLowMem()
 		{
-			object obj = default(object);
-			DeviceExtendedProperties.TryGetValue("DeviceTotalMemory", ref obj);
-			DO_LOW_MEMORY_OPTIONS = (LOW_MEMORY_DEVICE = (long)obj / 1024 / 1024 <= 256);
+            // blazingzephyr: Let's omit this for the time being.
+            // 
+            // object obj = default(object);
+            // DeviceExtendedProperties.TryGetValue("DeviceTotalMemory", ref obj);
+            // DO_LOW_MEMORY_OPTIONS = (LOW_MEMORY_DEVICE = (long)obj / 1024 / 1024 <= 256);
 			LOW_MEMORY_DEVICE = false;
 		}
 

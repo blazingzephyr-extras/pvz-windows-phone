@@ -1,7 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using Microsoft.Phone.Tasks;
+// blazingzephyr: We are not using Windows.Phone in this decompilation.
+//
+// using Microsoft.Phone.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Media;
@@ -1146,9 +1148,12 @@ namespace Lawn
 					Guide.ShowMarketplace(PlayerIndex.One);
 					return;
 				}
-				MarketplaceDetailTask val = new MarketplaceDetailTask();
-				val.ContentType = (MarketplaceContentType)1;
-				val.Show();
+				
+				// blazingzephyr: Something related to the app store, perhaps?
+				//
+				// MarketplaceDetailTask val = new MarketplaceDetailTask();
+				// val.ContentType = (MarketplaceContentType)1;
+				// val.Show();
 			}
 			else
 			{
