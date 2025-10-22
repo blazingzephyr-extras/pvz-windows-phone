@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
@@ -180,22 +180,22 @@ namespace Sexy
 		}
 
 		public bool LoadReanimation(string filename, ref ReanimatorDefinition def)
-		{
-			def = mReanimContentManager.Load<ReanimatorDefinition>(filename);
-			def.ExtractImages();
-			return true;
+        {
+            def = mReanimContentManager.Load<ReanimatorDefinition>(filename);
+            def.ExtractImages();
+            return true;
 		}
 
 		public bool LoadParticle(string filename, ref TodParticleDefinition def)
 		{
 			def = mParticleContentManager.Load<TodParticleDefinition>(filename);
-			return true;
+            return true;
 		}
 
 		public bool LoadTrail(string filename, ref TrailDefinition def)
 		{
 			def = mContentManager.Load<TrailDefinition>(filename);
-			return true;
+            return true;
 		}
 
 		public void ExtractReanimImages()
