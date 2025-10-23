@@ -12,10 +12,13 @@
   <PropertyGroup>
     <RootNamespace />
     <OutputType>WinExe</OutputType>
+    <ApplicationIcon>PvZ_tile_mobile173x173.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Microsoft.Xna.Framework.RuntimeProfile" />
     <None Remove="Microsoft.Xna.Framework.XlastConfiguration" />
+    <None Remove="Resources\LawnStrings_de.txt" />
+    <Content Include="PvZ_tile_mobile173x173.ico" />
     <EmbeddedResource Include="Microsoft.Xna.Framework.RuntimeProfile" LogicalName="Microsoft.Xna.Framework.RuntimeProfile" />
     <EmbeddedResource Include="Microsoft.Xna.Framework.XlastConfiguration" LogicalName="Microsoft.Xna.Framework.XlastConfiguration" />
   </ItemGroup>
@@ -41,5 +44,16 @@
     <Reference Include="Microsoft.Xna.Framework.Video">
       <HintPath>Libs\Microsoft.Xna.Framework.Video.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Content/**/*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Resources/**/*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Link>%(Filename)%(Extension)</Link>
+    </None>
   </ItemGroup>
 </Project>
