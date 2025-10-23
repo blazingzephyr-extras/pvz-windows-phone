@@ -301,9 +301,9 @@ namespace Lawn
 			mCrazyDaveMessageIndex = -1;
 			mLawnMessageBoxListener = null;
 			ReportAchievement.AchievementsChanged += ReportAchievement_AchievementsChanged;
-		}
+        }
 
-		private void ReportAchievement_AchievementsChanged()
+        private void ReportAchievement_AchievementsChanged()
 		{
 			if (mPlayerInfo != null)
 			{
@@ -1116,11 +1116,13 @@ namespace Lawn
 			{
 				return false;
 			}
-			Guide.BeginShowMessageBox(TodStringFile.TodStringTranslate("[ALLOW_RUN_WHEN_LOCKED_HEADING]"), TodStringFile.TodStringTranslate("[ALLOW_RUN_WHEN_LOCKED]"), new string[2]
-			{
-				TodStringFile.TodStringTranslate("[BUTTON_YES]"),
-				TodStringFile.TodStringTranslate("[BUTTON_NO]")
-			}, 0, MessageBoxIcon.None, RunWhenLockedMessageClosed, null);
+			// blazingzephyr: This screen causes indefinite freezes and does not seem to activate correctly, so let's ignore it.
+			// 
+			// Guide.BeginShowMessageBox(TodStringFile.TodStringTranslate("[ALLOW_RUN_WHEN_LOCKED_HEADING]"), TodStringFile.TodStringTranslate("[ALLOW_RUN_WHEN_LOCKED]"), new string[2]
+			// {
+			// 	TodStringFile.TodStringTranslate("[BUTTON_YES]"),
+			// 	TodStringFile.TodStringTranslate("[BUTTON_NO]")
+			// }, 0, MessageBoxIcon.None, RunWhenLockedMessageClosed, null);
 			return true;
 		}
 
