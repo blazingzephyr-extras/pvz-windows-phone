@@ -27,7 +27,9 @@ namespace Sexy
 
 		public static bool trialModeChecked = false;
 
-		private static bool trialModeCachedValue = true;
+		// blazingzephyr: Full version available from the start.
+		//
+		private static bool trialModeCachedValue = false;
 
 		internal static Graphics graphics;
 
@@ -197,7 +199,10 @@ namespace Sexy
 				trialModeChecked = true;
 				bool flag = trialModeCachedValue;
 				SetLowMem();
-				trialModeCachedValue = Guide.IsTrialMode;
+				// blazingzephyr: Live services show we are in a trial mode, but let's ignore it.
+				//
+				// trialModeCachedValue = Guide.IsTrialMode;
+				trialModeCachedValue = false;
 				if (flag != trialModeCachedValue && flag)
 				{
 					LeftTrialMode();
