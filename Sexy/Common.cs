@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
@@ -385,7 +385,12 @@ namespace Sexy
 			while (true)
 			{
 				int num = theDir.IndexOf('/', startIndex);
-				userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+
+                // blazingzephyr: Unavailable because this is not a ClickOnce nor Silverlight application.
+                // IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+                //
+                var scopes = IsolatedStorageScope.User | IsolatedStorageScope.Domain | IsolatedStorageScope.Assembly;
+                userStoreForApplication = IsolatedStorageFile.GetStore(scopes, null, null);
 				if (num == -1)
 				{
 					break;
@@ -408,8 +413,12 @@ namespace Sexy
 		}
 
 		public static bool DeleteFile(string lpFileName)
-		{
-			IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+        {
+            // blazingzephyr: Unavailable because this is not a ClickOnce nor Silverlight application.
+            // IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+            //
+            var scopes = IsolatedStorageScope.User | IsolatedStorageScope.Domain | IsolatedStorageScope.Assembly;
+            var userStoreForApplication = IsolatedStorageFile.GetStore(scopes, null, null);
 			if (userStoreForApplication.FileExists(lpFileName))
 			{
 				userStoreForApplication.DeleteFile(lpFileName);

@@ -262,8 +262,12 @@ namespace Sexy
 		public bool EraseFile(string theFileName)
 		{
 			try
-			{
-				IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+            {
+                // blazingzephyr: Unavailable because this is not a ClickOnce nor Silverlight application.
+                // IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+				//
+                var scopes = IsolatedStorageScope.User | IsolatedStorageScope.Domain | IsolatedStorageScope.Assembly;
+                var userStoreForApplication = IsolatedStorageFile.GetStore(scopes, null, null);
 				if (userStoreForApplication.FileExists(theFileName))
 				{
 					userStoreForApplication.DeleteFile(theFileName);
@@ -368,8 +372,12 @@ namespace Sexy
 
 		public bool FileExists(string filename)
 		{
-			IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
-			return userStoreForApplication.FileExists(filename);
+			// blazingzephyr: Unavailable because this is not a ClickOnce nor Silverlight application.
+			// IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+			//
+			var scopes = IsolatedStorageScope.User | IsolatedStorageScope.Domain | IsolatedStorageScope.Assembly;
+            var userStoreForApplication = IsolatedStorageFile.GetStore(scopes, null, null);
+            return userStoreForApplication.FileExists(filename);
 		}
 
 		public void UpdateInput()
@@ -664,8 +672,12 @@ namespace Sexy
 		public bool WriteBufferToFile(string theFileName, Buffer theBuffer)
 		{
 			try
-			{
-				using (IsolatedStorageFile isolatedStorageFile = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                // blazingzephyr: Unavailable because this is not a ClickOnce nor Silverlight application.
+                // IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+                //
+                var scopes = IsolatedStorageScope.User | IsolatedStorageScope.Domain | IsolatedStorageScope.Assembly;
+                using (var isolatedStorageFile = IsolatedStorageFile.GetStore(scopes, null, null))
 				{
 					string directoryName = Path.GetDirectoryName(theFileName);
 					if (!isolatedStorageFile.DirectoryExists(directoryName))
@@ -690,8 +702,12 @@ namespace Sexy
 		public bool ReadBufferFromFile(string theFileName, ref Buffer theBuffer, bool dontWriteToDemo)
 		{
 			try
-			{
-				using (IsolatedStorageFile isolatedStorageFile = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                // blazingzephyr: Unavailable because this is not a ClickOnce nor Silverlight application.
+                // IsolatedStorageFile userStoreForApplication = IsolatedStorageFile.GetUserStoreForApplication();
+                //
+                var scopes = IsolatedStorageScope.User | IsolatedStorageScope.Domain | IsolatedStorageScope.Assembly;
+                using (var isolatedStorageFile = IsolatedStorageFile.GetStore(scopes, null, null))
 				{
 					if (!isolatedStorageFile.FileExists(theFileName))
 					{
